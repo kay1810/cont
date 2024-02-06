@@ -1,6 +1,4 @@
-Sure, here's the detailed workflow with all the validation checks and inputs included:
 
----
 
 **Detailed Workflow: Automated Certificate Renewal**
 
@@ -76,6 +74,4 @@ Sure, here's the detailed workflow with all the validation checks and inputs inc
 12. **End:**
     - The process concludes.
 
----
 
-This detailed workflow outlines the step-by-step process involved in the automated certificate renewal system, including validation checks and inputs at each stage. Let me know if you need further assistance!
