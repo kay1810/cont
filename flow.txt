@@ -1,0 +1,81 @@
+Sure, here's the detailed workflow with all the validation checks and inputs included:
+
+---
+
+**Detailed Workflow: Automated Certificate Renewal**
+
+1. **Start:**
+   - The process begins.
+
+2. **JSON Datastore Creation:**
+   - Certificate-related data is collected from various sources, including CSV files and manual inputs.
+   - Data is formatted into a JSON structure containing server information, certificate names, and expiry dates.
+   - Validation:
+     - Check if the JSON datastore is valid.
+     - Error Handling:
+       - If the JSON datastore is invalid, display an error message and halt the process.
+
+3. **Certificate Validation:**
+   - A script reads the JSON datastore to retrieve certificate information.
+   - Validation:
+     - Check if Venafi credentials are provided.
+     - Error Handling:
+       - If Venafi credentials are missing, display an error message and halt the process.
+
+4. **Check Certificates Nearing Expiry:**
+   - Examine the expiry dates of certificates to identify those nearing expiry, typically within 30 days.
+   - Validation:
+     - Check if the Venafi API is accessible.
+     - Error Handling:
+       - If unable to access the Venafi API, display an error message and halt the process.
+
+5. **Retrieve Certificate Status from Venafi API:**
+   - Access the Venafi API using provided credentials to retrieve certificates' status and expiry dates.
+   - Validation:
+     - Check if certificates are retrieved successfully.
+     - Error Handling:
+       - If unable to retrieve certificates, display an error message and halt the process.
+
+6. **Identify Certificates Needing Renewal:**
+   - Compare the expiry dates obtained from Venafi with the current date to determine certificates needing renewal.
+   - Validation:
+     - Check if any certificates need renewal.
+     - Error Handling:
+       - If no certificates need renewal, proceed to certificate installation.
+       - If unable to identify certificates needing renewal, display an error message and halt the process.
+
+7. **Octopus Deployment:**
+   - Initiate Octopus deployments for certificates nearing expiry, ensuring efficient renewal planning.
+   - Docker containers execute Python scripts to interact with the Venafi API for certificate renewal.
+   - Validation:
+     - Ensure successful initiation of Octopus deployments.
+     - Error Handling:
+       - If Octopus deployments fail to initiate, display an error message and halt the process.
+
+8. **Docker Container Execution (Venafi Certificate Renewal):**
+   - Execute Python scripts within Docker containers to access the Venafi renew endpoint and renew certificates nearing expiry.
+   - Validation:
+     - Ensure successful execution of the renewal process.
+     - Error Handling:
+       - If certificate renewal fails, display an error message and halt the process.
+
+9. **PowerShell Certificate Installation:**
+   - PowerShell scripts receive renewed certificate's PFX content, certificate name, and server name as inputs.
+   - Install renewed certificates on the target servers.
+   - Validation:
+     - Ensure successful installation of renewed certificates.
+     - Error Handling:
+       - If certificate installation fails, display an error message and halt the process.
+
+10. **Logging and Monitoring:**
+    - Log installation statuses, including success or failure, to a designated location for tracking and monitoring purposes.
+
+11. **Display Logs on GitHub Pages:**
+    - Logs are displayed on GitHub Pages for easy access and monitoring.
+
+12. **End:**
+    - The process concludes.
+
+---
+
+This detailed workflow outlines the step-by-step process involved in the automated certificate renewal system, including validation checks and inputs at each stage. Let me know if you need further assistance!
