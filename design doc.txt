@@ -1,0 +1,81 @@
+Thank you for providing detailed information about your requirements. Based on the use case you've described, let's outline the sections of your detailed design document:
+
+### 1. Title Page
+- Title: Automated Certificate Renewal Solution
+- Date: [Date]
+- Author(s): [Your Name/Team Name]
+- Contact Information: [Email/Phone]
+
+### 2. Table of Contents
+- [List of Sections with Page Numbers]
+
+### 3. Executive Summary
+- Overview of the project
+- Objective: Automate certificate renewal process for servers to ensure uninterrupted service and security.
+- Scope: Develop scripts to handle certificate renewal, server identification, Octopus deployment, and update server information.
+- Key Features: Daily certificate expiration check, automated renewal using Venafi API, Octopus deployment for certificate installation, update of server information, logging of installation status.
+
+### 4. Introduction
+- Background: Explanation of the need for automated certificate renewal to prevent service disruptions and maintain security.
+- Purpose of the Document: To outline the detailed design of the automated solution for certificate renewal.
+- Scope of the Project: Covers the development of scripts to handle certificate renewal and server updates.
+
+### 5. Requirements Analysis
+- **Functional Requirements**:
+  - Certificate Expiration Check:
+    - Script to check expiry dates of certificates in CSV file.
+    - Identify certificates with expiry less than 30 days.
+  - Certificate Renewal:
+    - Script to connect to IDP and Venafi API for authentication.
+    - Fetch bearer token and renew certificates using Venafi API.
+    - Update CSV file with renewal status and new expiry date.
+  - Server Identification for Renewal:
+    - Script to identify servers using the renewed certificates.
+    - Mark servers for renewal and trigger Octopus deployment.
+  - Octopus Deployment:
+    - Script to create deployment for installing renewed certificates.
+    - Different steps based on certificate installation type (IIS, Java Keystore, MMC).
+  - Certificate Installation:
+    - PowerShell script to install renewed certificates on servers.
+    - Retrieve renewed certificates from Venafi.
+    - Perform TVT checks after installation.
+  - Logging and Update:
+    - Log installation status in separate file in Git.
+    - Update server CSV file with installation status.
+
+- **Non-functional Requirements**:
+  - Security: Ensure secure communication with IDP and Venafi API.
+  - Reliability: Scripts should handle errors gracefully and provide appropriate logging.
+  - Performance: Scripts should execute efficiently without causing significant overhead.
+  - Scalability: Able to handle a large number of servers and certificates.
+  
+### 6. Architecture Design
+- High-level architecture diagram depicting the components and their interactions.
+- Components:
+  - Certificate Expiration Checker
+  - Certificate Renewal Module
+  - Server Identifier
+  - Octopus Deployment Generator
+  - Certificate Installation Orchestrator
+
+### 7. Detailed Design
+- Detailed design of each component with flowcharts, pseudo code, and algorithm descriptions.
+
+### 8. Implementation Plan
+- Timeline for development, testing, and deployment phases.
+- Allocation of resources and responsibilities.
+
+### 9. Testing Strategy
+- Types of testing (unit, integration, system, acceptance).
+- Test scenarios and expected outcomes.
+
+### 10. Maintenance and Support
+- Plan for ongoing maintenance, updates, and support after deployment.
+
+### 11. Conclusion
+- Summary of the detailed design and its significance for the project.
+
+### 12. References
+- Any external sources or documentation referenced during the design process.
+
+This outline should give you a solid structure for your detailed design document. You can expand each section with more details as needed.
