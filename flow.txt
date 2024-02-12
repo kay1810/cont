@@ -1,75 +1,115 @@
+Certainly! Here are the tasks outlined in the requested format:
 
+### 1. Read Input CSV Files
+**Description:** Read two input CSV files: one containing certificate name, expiry date, and serial number/thumprint, and the other containing server details, installed certificates, installation paths, certificate formats, and installation types.
 
-Detailed Workflow: Automated Certificate Renewal
+**Success:**
+- Proceed to create JSON from the second CSV with server details.
 
-1. Start:
-   - The process begins.
+**Failure:**
+- If unable to read the input CSV files:
+  - Log an error message.
+  - Halt the process and notify administrators to check the file paths or file format.
 
-2. JSON Datastore Creation:
-   - Certificate-related data is collected from various sources, including CSV files and manual inputs.
-   - Data is formatted into a JSON structure containing server information, certificate names, and expiry dates.
-   - Validation:
-     - Check if the JSON datastore is valid.
-     - Error Handling:
-       - If the JSON datastore is invalid, display an error message and halt the process.
+### 2. Create JSON from CSV
+**Description:** Parse the second CSV file with server details and create JSON objects to represent each server's information.
 
-3. Certificate Validation:
-   - A script reads the JSON datastore to retrieve certificate information.
-   - Validation:
-     - Check if Venafi credentials are provided.
-     - Error Handling:
-       - If Venafi credentials are missing, display an error message and halt the process.
+**Success:**
+- Proceed to daily certificate expiration check.
 
-4. Check Certificates Nearing Expiry:
-   - Examine the expiry dates of certificates to identify those nearing expiry, typically within 30 days.
-   - Validation:
-     - Check if the Venafi API is accessible.
-     - Error Handling:
-       - If unable to access the Venafi API, display an error message and halt the process.
+**Failure:**
+- If unable to create JSON from CSV:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
 
-5. Retrieve Certificate Status from Venafi API:
-   - Access the Venafi API using provided credentials to retrieve certificates' status and expiry dates.
-   - Validation:
-     - Check if certificates are retrieved successfully.
-     - Error Handling:
-       - If unable to retrieve certificates, display an error message and halt the process.
+### 3. Daily Certificate Expiration Check
+**Description:** Check the first CSV file for certificates with expiry dates less than 30 days. Connect to IDP endpoint, fetch bearer token, and renew certificates using Venafi API.
 
-6. Identify Certificates Needing Renewal:
-   - Compare the expiry dates obtained from Venafi with the current date to determine certificates needing renewal.
-   - Validation:
-     - Check if any certificates need renewal.
-     - Error Handling:
-       - If no certificates need renewal, proceed to certificate installation.
-       - If unable to identify certificates needing renewal, display an error message and halt the process.
+**Success:**
+- Proceed to update the first CSV post-renewal.
 
-7. Octopus Deployment:
-   - Initiate Octopus deployments for certificates nearing expiry, ensuring efficient renewal planning.
-   - Docker containers execute Python scripts to interact with the Venafi API for certificate renewal.
-   - Validation:
-     - Ensure successful initiation of Octopus deployments.
-     - Error Handling:
-       - If Octopus deployments fail to initiate, display an error message and halt the process.
+**Failure:**
+- If unable to connect to IDP or Venafi API:
+  - Retry for x times with a 30-second wait time between retries.
+  - Handle specific exceptions (e.g., invalid token error) by going back to the previous step to get a new token from IDP.
+  - If unsuccessful after retries, halt the process and notify administrators.
 
-8. Docker Container Execution (Venafi Certificate Renewal):
-   - Execute Python scripts within Docker containers to access the Venafi renew endpoint and renew certificates nearing expiry.
-   - Validation:
-     - Ensure successful execution of the renewal process.
-     - Error Handling:
-       - If certificate renewal fails, display an error message and halt the process.
+### 4. Update First CSV
+**Description:** Update the first CSV file post-renewal with renewal status, new expiry date, thumbprint, etc.
 
-9. PowerShell Certificate Installation:
-   - PowerShell scripts receive renewed certificate's PFX content, certificate name, and server name as inputs.
-   - Install renewed certificates on the target servers.
-   - Validation:
-     - Ensure successful installation of renewed certificates.
-     - Error Handling:
-       - If certificate installation fails, display an error message and halt the process.
+**Success:**
+- Proceed to mark servers for renewal.
 
-10. Logging and Monitoring:
-    - Log installation statuses, including success or failure, to a designated location for tracking and monitoring purposes.
+**Failure:**
+- If unable to update the first CSV:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
 
-11. Display Logs on GitHub Pages:
-    - Logs are displayed on GitHub Pages for easy access and monitoring.
+### 5. Mark Servers for Renewal
+**Description:** Mark servers for renewal based on the certificates renewed in the previous step.
 
-12. End:
-    - The process concludes.
+**Success:**
+- Proceed to create Octopus deployments.
+
+**Failure:**
+- If unable to mark servers for renewal:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
+
+### 6. Create Octopus Deployments
+**Description:** Generate Octopus deployments for the installation of new certificates on each server.
+
+**Success:**
+- Proceed to install renewed certificates on servers.
+
+**Failure:**
+- If unable to create Octopus deployments:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
+
+### 7. Install Renewed Certificates
+**Description:** Connect to Venafi to retrieve renewed certificates and install them on servers based on the installation type.
+
+**Success:**
+- Proceed to perform TVT checks.
+
+**Failure:**
+- If installation fails:
+  - Log an error message.
+  - Retry installation for x times with a 30-second wait time between retries.
+  - If unsuccessful after retries, proceed to logging the status in a separate file.
+
+### 8. Perform TVT Checks
+**Description:** Perform Test-Verify-Test checks after certificate installation.
+
+**Success:**
+- Proceed to log installation status in a separate file in Git.
+
+**Failure:**
+- If TVT checks fail:
+  - Log an error message.
+  - Proceed to log installation status in a separate file in Git.
+
+### 9. Log Installation Status in Git
+**Description:** Log the status of certificate installation in a separate file in Git, visible to users via GitHub Pages.
+
+**Success:**
+- Proceed to update the server CSV file.
+
+**Failure:**
+- If unable to log installation status in Git:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
+
+### 10. Update Server CSV
+**Description:** Update the server CSV file with the installation date and status (success/failure).
+
+**Success:**
+- Completion of the automated certificate renewal process.
+
+**Failure:**
+- If unable to update the server CSV:
+  - Log an error message.
+  - Halt the process and notify administrators to investigate and fix the issue.
+
+This breakdown provides a structured approach to understanding each task, its success criteria, and the actions to take in case of failure. Adjustments can be made based on specific requirements or scenarios.
