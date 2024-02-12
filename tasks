@@ -1,0 +1,13 @@
+
+1. Certificate Expiration Check Script: Develop a script to check the expiry dates of certificates.
+2. Certificate Renewal Script: Develop a script to renew certificates using Venafi API.
+3. Server Identification Script: Develop a script to match renewed certificates with servers.
+4. Octopus Deployment Script: Develop scripts to generate Octopus deployments for certificate installation.
+5. Certificate Installation Script: Develop a script to install renewed certificates on servers.
+6. Create JSON from Server CSV: Convert server details from CSV to JSON format.
+7. Daily Certificate Expiration Check: Implement a daily script to check certificate expirations.
+8. Update First CSV Post-Renewal: Update the first CSV file after certificate renewal.
+9. Mark Servers for Renewal: Identify servers for renewal based on certificate updates.
+10. Perform TVT Checks: Conduct Test-Verify-Test checks post-installation.
+11. Log Installation Status in Git: Log installation status in a Git repository.
+12. Update Server CSV: Update the server CSV file with installation details.
