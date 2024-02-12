@@ -79,3 +79,92 @@ Thank you for providing detailed information about your requirements. Based on t
 - Any external sources or documentation referenced during the design process.
 
 This outline should give you a solid structure for your detailed design document. You can expand each section with more details as needed.
+
+
+---------------
+Certainly! Here's a more detailed content outline for each section of the design document:
+
+### 1. Title Page
+Title: Automated Certificate Renewal Solution
+Date: [Date]
+Author(s): [Your Name/Team Name]
+Contact Information: [Email/Phone]
+
+### 2. Table of Contents
+1. Executive Summary
+2. Introduction
+3. Requirements Analysis
+   - Functional Requirements
+   - Non-functional Requirements
+4. Architecture Design
+5. Detailed Design
+6. Implementation Plan
+7. Testing Strategy
+8. Maintenance and Support
+9. Conclusion
+10. References
+
+### 3. Executive Summary
+In this section, provide a brief overview of the project, its objectives, scope, and key features. Highlight the need for automated certificate renewal and how the solution addresses it.
+
+### 4. Introduction
+Explain the background and context of the project, such as the importance of certificate management, potential risks of certificate expiration, and the need for automation. Define the scope of the project and its significance.
+
+### 5. Requirements Analysis
+#### Functional Requirements
+1. **Certificate Expiration Check**:
+   - Script to read the expiry dates of certificates from the input CSV file.
+   - Identify certificates with an expiry less than 30 days.
+2. **Certificate Renewal**:
+   - Python script to authenticate with IDP and Venafi API.
+   - Fetch bearer token from IDP and use it to connect to Venafi API for certificate renewal.
+   - Update the first CSV file with renewal status, new expiry date, and thumbprint.
+3. **Server Identification for Renewal**:
+   - Script to match renewed certificates with servers from the second CSV file.
+   - Mark servers for renewal based on the matched certificates.
+4. **Octopus Deployment**:
+   - Script to generate Octopus deployments for certificate installation.
+   - Different deployment steps based on certificate installation type (IIS, Java Keystore, MMC).
+5. **Certificate Installation**:
+   - PowerShell script to install renewed certificates on servers.
+   - Retrieve renewed certificates from Venafi using Python script.
+   - Perform TVT (Test-Verify-Test) checks after installation.
+6. **Logging and Update**:
+   - Log installation status in a separate file in Git.
+   - Update the second CSV file with installation status and date.
+
+#### Non-functional Requirements
+1. **Security**:
+   - Ensure secure communication with IDP and Venafi API using encryption and authentication mechanisms.
+2. **Reliability**:
+   - Handle errors gracefully and provide appropriate logging for troubleshooting.
+3. **Performance**:
+   - Scripts should execute efficiently without significant overhead.
+4. **Scalability**:
+   - Ability to handle a large number of servers and certificates.
+
+### 6. Architecture Design
+Provide a high-level architecture diagram depicting the components (Certificate Expiration Checker, Certificate Renewal Module, Server Identifier, Octopus Deployment Generator, Certificate Installation Orchestrator) and their interactions.
+
+### 7. Detailed Design
+For each component, provide detailed design including:
+- Flowcharts depicting the logic and workflow.
+- Pseudo code or algorithm descriptions.
+- Data structures and data flow diagrams.
+
+### 8. Implementation Plan
+Outline the timeline for development, testing, and deployment phases. Allocate resources and responsibilities among team members.
+
+### 9. Testing Strategy
+Describe the types of testing to be conducted (unit, integration, system, acceptance) and provide test scenarios and expected outcomes.
+
+### 10. Maintenance and Support
+Detail the plan for ongoing maintenance, updates, and support after deployment, including monitoring and troubleshooting procedures.
+
+### 11. Conclusion
+Summarize the key points of the detailed design and reiterate its significance for the project.
+
+### 12. References
+Provide citations or links to any external sources or documentation referenced during the design process.
+
+This content outline should help you create a comprehensive design document for your automated certificate renewal solution.
