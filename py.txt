@@ -1,1 +1,39 @@
+import csv
+import subprocess
+from git import Repo
+
+# Function to update the installation status in the CSV file
+def update_installation_status(csv_file, cert_name, installation_status):
+    with open(csv_file, 'rb') as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+
+    # Find the row corresponding to the certificate name
+    for row in rows:
+        if row['cert_name'] == cert_name:
+            row['pending_for_new_cert_installation'] = 'No' if installation_status == 'success' else 'Yes'
+            break
+
+    # Write the updated rows back to the CSV file
+    with open(csv_file, 'wb') as f:
+        writer = csv.DictWriter(f, fieldnames=reader.fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+# Call the external command to get the installation status
+# Replace this with the actual command and capture the output
+installation_status = subprocess.check_output(['some_command_to_get_status'])
+
+# Update the CSV file with the installation status
+update_installation_status('server_details.csv', 'YourCertName', installation_status.strip())
+
+# Commit the changes to Git repository
+repo = Repo('path/to/your/git/repository')
+index = repo.index
+index.add(['server_details.csv'])
+index.commit('Update installation status for certificate')
+
+# Push the changes to remote repository
+origin = repo.remote(name='origin')
+origin.push()
 
