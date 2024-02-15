@@ -36,3 +36,68 @@ Certainly! Below is the refined workflow with points until step 5, including how
 ---
 
 This refined workflow outlines the step-by-step process involved in the automated certificate renewal system, up to the installation and logging stages. It also describes how the validation script checks Venafi for new certificates and retrieves them if already created for other servers, ensuring efficient certificate management.
+
+
+
+# Function to trigger TeamCity build remotely
+function Trigger-TeamCityBuild {
+    param (
+        [string]$TeamCityUrl,
+        [string]$ProjectId,
+        [string]$BuildConfigId,
+        [string]$Username,
+        [string]$Password,
+        [string]$Parameters
+    )
+
+    $uri = "$TeamCityUrl/app/rest/buildQueue"
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $Username,$Password)))
+
+    $headers = @{
+        "Authorization" = "Basic $base64AuthInfo"
+        "Content-Type" = "application/xml"
+    }
+
+    $body = @"
+<build>
+  <buildType id="$BuildConfigId"/>
+  <properties>
+    $Parameters
+  </properties>
+</build>
+"@
+
+    Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
+}
+
+# Read server details CSV
+$servers = Import-Csv -Path "server_details.csv"
+
+# Filter servers pending for new cert installation
+$serversPendingInstallation = $servers | Where-Object { $_.'pending_for_new_cert_installation' -eq 'Yes' }
+
+# Group servers by certificate
+$certificates = $serversPendingInstallation | Group-Object -Property 'cert_name'
+
+# Iterate over each certificate group
+foreach ($certificateGroup in $certificates) {
+    $certificateName = $certificateGroup.Name
+    $serversUsingCertificate = $certificateGroup.Group
+
+    # Define deployment parameters
+    $deploymentParameters = @{
+        "CertPath" = "path/to/certificate";
+        "CertFormat" = "certificate format";
+        "CertName" = $certificateName;
+        "Variable1" = "Value1";  # Set value for Variable1
+        "Variable2" = "Value2";  # Set value for Variable2
+        # Add more variables as needed
+    }
+
+    # Convert deployment parameters to string
+    $deploymentParametersString = $deploymentParameters | ForEach-Object { "$($_.Key)=$($_.Value)" } | Out-String
+
+    # Trigger TeamCity build remotely
+    Trigger-TeamCityBuild -TeamCityUrl "http://your-teamcity-server" -ProjectId "YourProjectId" -BuildConfigId "YourBuildConfigId" -Username "YourUsername" -Password "YourPassword" -Parameters $deploymentParametersString
+}
+
