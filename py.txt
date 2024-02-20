@@ -1,17 +1,12 @@
-# Assuming $certificateName contains the certificate name and $serverName contains the server name for which status was updated
-
 # Read server details CSV
 $servers = Import-Csv -Path "server_details.csv"
 
 # Find all servers using the same certificate
 $serversUsingCertificate = $servers | Where-Object { $_.'cert name' -eq $certificateName }
 
-# Check if all servers using the certificate have been updated to "No" for "pending for new cert installation"
-$allServersUpdated = $serversUsingCertificate | ForEach-Object {
-    if ($_.server_name -ne $serverName -and $_.'pending for new cert installation' -eq 'Yes') {
-        return $false
-    }
-}
+# Check if all servers using the certificate have "pending for new cert installation" set to "No"
+$allServersUpdated = ($serversUsingCertificate.'pending for new cert installation' -eq 'No').Count -eq $serversUsingCertificate.Count
+
 if ($allServersUpdated) {
     # All servers using the certificate have been updated, update the "pending for provision" flag in the certificate CSV
     $certificates = Import-Csv -Path "certificate_details.csv"
@@ -23,9 +18,6 @@ if ($allServersUpdated) {
         Write-Warning "Certificate '$certificateName' not found in the certificate details CSV."
     }
 } else {
-    # Some servers using the certificate are still pending, print the details
-    Write-Host "Servers using certificate '$certificateName' still pending for new cert installation:"
-    $serversUsingCertificate | Where-Object { $_.'pending for new cert installation' -eq 'Yes' } | ForEach-Object {
-        Write-Host "Server: $($_.server_name)"
-    }
+    # Some servers using the certificate are still pending, do nothing
+    Write-Host "Servers using certificate '$certificateName' are still pending for new cert installation."
 }
