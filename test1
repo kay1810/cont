@@ -1,41 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Display</title>
-</head>
-<body>
-    <h1>Data Display</h1>
-    <table border="1">
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+// Function to parse CSV data with column names
+function parseCSVWithHeaders(data) {
+    const rows = data.trim().split('\n');
+    const headers = rows.shift().split(',');
+    return rows.map(row => {
+        const rowData = row.split(',');
+        const entry = {};
+        headers.forEach((header, index) => {
+            entry[header.trim()] = rowData[index].trim();
+        });
+        return entry;
+    });
+}
 
-    <script>
-        // Fetch the CSV file and display its contents in the table
-        fetch('data.csv')
-            .then(response => response.text())
-            .then(data => {
-                const rows = data.trim().split('\n');
-                const tbody = document.querySelector('tbody');
-                rows.forEach(row => {
-                    const cells = row.split(',');
-                    const tr = document.createElement('tr');
-                    cells.forEach(cell => {
-                        const td = document.createElement('td');
-                        td.textContent = cell;
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-    </script>
-</body>
-</html>
+// Function to populate table with data
+function populateTable(tableId, data, columnNames) {
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+
+    // Clear table body
+    tbody.innerHTML = '';
+
+    // Populate table with data
+    data.forEach(rowData => {
+        const row = document.createElement('tr');
+        columnNames.forEach(columnName => {
+            const cell = document.createElement('td');
+            cell.textContent = rowData[columnName];
+            row.appendChild(cell);
+        });
+        tbody.appendChild(row);
+    });
+}
+
+// Function to filter data within the last 10 days
+function filterLast10Days(data, dateColumnName) {
+    const currentDate = new Date();
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+    return data.filter(row => {
+        const dateParts = row[dateColumnName].split('/');
+        const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+        return date >= tenDaysAgo && date <= currentDate;
+    });
+}
+
+// Fetch and parse certificate renewal data
+fetchData('Certificate_Details.csv')
+    .then(parseCSVWithHeaders)
+    .then(data => {
+        const pendingRenewalData = data.filter(row => row['MARKED FOR RENEWAL'].toLowerCase() === 'yes');
+        const columnNamesPendingRenewal = ['Certificate Name', 'Expiry Date'];
+        populateTable('pendingRenewalTable', pendingRenewalData, columnNamesPendingRenewal);
+
+        const recentlyRenewedData = filterLast10Days(data, 'Renewed On');
+        const columnNamesRecentlyRenewed = ['Certificate Name', 'Renewed On', 'Pending Provisioning'];
+        populateTable('recentlyRenewedTable', recentlyRenewedData, columnNamesRecentlyRenewed);
+    });
+
+// Fetch and parse server installation data
+fetchData('Server_Certificates.csv')
+    .then(parseCSVWithHeaders)
+    .then(data => {
+        const pendingInstallationData = data.filter(row => row['PENDING NEW CERT INSTALLATION'].toLowerCase() === 'yes');
+        const columnNamesPendingInstallation = ['Server Name', 'Certificate Name', 'PENDING NEW CERT INSTALLATION'];
+        populateTable('pendingInstallationTable', pendingInstallationData, columnNamesPendingInstallation);
+
+        const recentlyInstalledData = filterLast10Days(data, 'Recent Installation Date');
+        const columnNamesRecentlyInstalled = ['Server Name', 'Certificate Name', 'Recent Installation Date', 'Recent Installation Status'];
+        populateTable('recentlyInstalledTable', recentlyInstalledData, columnNamesRecentlyInstalled);
+    });
