@@ -213,3 +213,18 @@ Certainly! Here's the complete `index.html` file with the JavaScript code includ
             .then(parseCSVWithHeaders)
             .then(data => {
                 const pendingInstallationData = data.filter(row => row['PENDING NEW CERT INSTALLATION'].
+
+toLowerCase() === 'yes');
+                const columnNamesPendingInstallation = ['Server Name', 'Certificate Name', 'PENDING NEW CERT INSTALLATION'];
+                populateTable('pendingInstallationTable', pendingInstallationData, columnNamesPendingInstallation);
+
+                const recentlyInstalledData = filterLast10Days(data, 'Recent Installation Date');
+                const columnNamesRecentlyInstalled = ['Server Name', 'Certificate Name', 'Recent Installation Date', 'Recent Installation Status'];
+                populateTable('recentlyInstalledTable', recentlyInstalledData, columnNamesRecentlyInstalled);
+            });
+    </script>
+</body>
+</html>
+```
+
+This HTML file now includes the complete JavaScript code to fetch data from the CSV files, parse the data with column names, filter the data for the last 10 days, and populate the tables accordingly. Adjustments have been made to ensure that the appropriate column names are used for each dataset.
