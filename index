@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Overview</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .section {
+            width: 45%;
+            border: 1px solid #ddd;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Certificate Overview</h1>
+    </header>
+    <div class="container">
+        <div class="section">
+            <h2>Certificate Renewal Status</h2>
+            <table id="pendingRenewalTable">
+                <thead>
+                    <tr>
+                        <th>Certificate Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>Server Installation Status</h2>
+            <table id="pendingInstallationTable">
+                <thead>
+                    <tr>
+                        <th>Server Name</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch data from CSV file
+        async function fetchData(url) {
+            const response = await fetch(url);
+            const data = await response.text();
+            return data;
+        }
+
+        // Function to parse CSV data
+        function parseCSV(data) {
+            return data.trim().split('\n').map(row => row.split(','));
+        }
+
+        // Function to populate table with data
+        function populateTable(tableId, data) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+
+            data.forEach(rowData => {
+                const row = document.createElement('tr');
+                rowData.forEach(cellData => {
+                    const cell = document.createElement('td');
+                    cell.textContent = cellData;
+                    row.appendChild(cell);
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        // Function to filter out data within the last 10 days
+        function filterLast10Days(data) {
+            const currentDate = new Date();
+            const tenDaysAgo = new Date();
+            tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+            return data.filter(row => {
+                const date = new Date(row[1]); // Assuming the date is in the second column
+                return date >= tenDaysAgo && date <= currentDate;
+            });
+        }
+
+        // Fetch and parse certificate renewal data
+        fetchData('certificate_renewal.csv')
+            .then(parseCSV)
+            .then(filterLast10Days)
+            .then(data => populateTable('pendingRenewalTable', data));
+
+        // Fetch and parse server installation data
+        fetchData('server_installation.csv')
+            .then(parseCSV)
+            .then(filterLast10Days)
+            .then(data => populateTable('pendingInstallationTable', data));
+    </script>
+</body>
+</html>
