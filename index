@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,19 +21,22 @@
             margin: 0;
         }
         .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
             padding: 20px;
         }
         .section {
-            display: inline-block;
-            width: 45%;
-            vertical-align: top;
+            width: 48%;
             border: 1px solid #ddd;
             padding: 20px;
             box-sizing: border-box;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
@@ -48,33 +52,67 @@
     <div class="container">
         <div class="section">
             <h2>Certificate Renewal Status</h2>
-            <h3>Certificates Pending for Renewal</h3>
-            <table id="pendingRenewalTable">
-                <thead>
-                    <tr>
-                        <th>Certificate Name</th>
-                        <th>Expiry Date</th>
-                        <th>Marked for Renewal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div>
+                <h3>Certificates Pending for Renewal</h3>
+                <table id="pendingRenewalTable">
+                    <thead>
+                        <tr>
+                            <th>Certificate Name</th>
+                            <th>Expiry Date</th>
+                            <th>Marked for Renewal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3>Certificates Renewed Recently</h3>
+                <table id="recentlyRenewedTable">
+                    <thead>
+                        <tr>
+                            <th>Certificate Name</th>
+                            <th>Renewed On</th>
+                            <th>Pending Provisioning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="section">
             <h2>Recently Renewed Certificates</h2>
-            <h3>Certificates Renewed in the Last 10 Days</h3>
-            <table id="recentlyRenewedTable">
-                <thead>
-                    <tr>
-                        <th>Certificate Name</th>
-                        <th>Renewed On</th>
-                        <th>Pending Provisioning</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+            <div>
+                <h3>Servers Pending Certificate Installation</h3>
+                <table id="pendingInstallationTable">
+                    <thead>
+                        <tr>
+                            <th>Server Name</th>
+                            <th>Certificate Name</th>
+                            <th>Pending New Cert Installation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h3>Servers with New Certificates Installed Recently</h3>
+                <table id="recentlyInstalledTable">
+                    <thead>
+                        <tr>
+                            <th>Server Name</th>
+                            <th>Certificate Name</th>
+                            <th>Pending New Cert Installation</th>
+                            <th>Recent Installation Date</th>
+                            <th>Recent Installation Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -120,16 +158,23 @@
         }
 
         // Fetch and parse certificate renewal data
-        fetchData('certificate_renewal.csv')
+        fetchData('Certificate_Details.csv')
             .then(parseCSV)
             .then(data => {
-                // Filter data for certificates pending for renewal
                 const pendingRenewalData = data.filter(row => row[2] === 'Yes');
-                // Filter data for recently renewed certificates
-                const recentlyRenewedData = filterLast10Days(data);
-                // Populate tables
+                const recentlyRenewedData = filterLast10Days(data.filter(row => row[5] === 'Success'));
                 populateTable('pendingRenewalTable', pendingRenewalData);
                 populateTable('recentlyRenewedTable', recentlyRenewedData);
+            });
+
+        // Fetch and parse server installation data
+        fetchData('Server_Certificates.csv')
+            .then(parseCSV)
+            .then(data => {
+                const pendingInstallationData = data.filter(row => row[2] === 'Yes');
+                const recentlyInstalledData = filterLast10Days(data.filter(row => row[4] === 'Success'));
+                populateTable('pendingInstallationTable', pendingInstallationData);
+                populateTable('recentlyInstalledTable', recentlyInstalledData);
             });
     </script>
 </body>
