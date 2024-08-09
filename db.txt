@@ -1,0 +1,58 @@
+# Define connection details
+$serverName = "YourServerName"
+$databaseName = "YourDatabaseName"
+$username = "YourUsername"
+$password = "YourPassword"
+
+# Define the SQL query
+$query = "SELECT 1"
+
+# Define connection string
+$connectionString = "Server=$serverName;Database=$databaseName;User Id=$username;Password=$password;"
+
+# Create and open a SQL connection
+try {
+    $connection = New-Object System.Data.SqlClient.SqlConnection
+    $connection.ConnectionString = $connectionString
+    $connection.Open()
+
+    Write-Output "Connection to the database was successful."
+
+    # Create and execute the SQL command
+    $command = $connection.CreateCommand()
+    $command.CommandText = $query
+    $result = $command.ExecuteScalar()
+
+    Write-Output "Query executed successfully. Result: $result"
+
+    # Close the connection
+    $connection.Close()
+} catch {
+    Write-Error "Failed to connect or execute query: $_"
+}
+
+
+
+
+
+
+
+# Define connection details
+$serverName = "YourServerName"
+$databaseName = "YourDatabaseName"
+$username = "YourUsername"
+$password = "YourPassword"
+
+# Define the SQL query
+$query = "SELECT 1"
+
+# Define connection string
+$connectionString = "Server=$serverName;Database=$databaseName;User Id=$username;Password=$password;"
+
+# Execute the SQL query and capture the result
+try {
+    $result = Invoke-Sqlcmd -ConnectionString $connectionString -Query $query
+    Write-Output "Connection successful. Query result: $($result.Column1)"
+} catch {
+    Write-Error "Failed to connect or execute query: $_"
+}
